@@ -1,25 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { EASE_LUXE } from "@/lib/motion";
 import { HOME_GALLERY } from "@/lib/media";
 import Eyebrow from "@/components/ui/Eyebrow";
 import AnimatedLink from "@/components/ui/AnimatedLink";
-import { useReducedMotion } from "@/lib/useReducedMotion";
-import { useMounted } from "@/lib/useMounted";
+import { cn } from "@/lib/utils";
 import { useIsDesktop } from "@/lib/useMediaQuery";
 
-/** Asymmetric editorial composition (12-col on desktop) + per-tile parallax depth. */
-const LAYOUT = [
-  { span: "md:col-span-7", aspect: "md:aspect-[16/11]", depth: 46 },
-  { span: "md:col-span-5", aspect: "md:aspect-[4/5]", depth: 72 },
-  { span: "md:col-span-5", aspect: "md:aspect-[5/6]", depth: 64 },
-  { span: "md:col-span-7", aspect: "md:aspect-[16/10]", depth: 40 },
-  { span: "md:col-span-6", aspect: "md:aspect-[5/4]", depth: 54 },
-  { span: "md:col-span-6", aspect: "md:aspect-[5/4]", depth: 54 },
-];
+const TOTAL = HOME_GALLERY.length;
 
 function Heading() {
   return (
@@ -35,46 +26,17 @@ function Heading() {
   );
 }
 
-function Tile({
-  item,
-  layout,
-  n,
-  parallax,
-  reveal,
-  onOpen,
-}: {
-  item: (typeof HOME_GALLERY)[number];
-  layout: (typeof LAYOUT)[number];
-  n: number;
-  parallax: boolean;
-  reveal: boolean;
-  onOpen: () => void;
-}) {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [layout.depth, -layout.depth]);
-
+function Card({ item, n, onOpen }: { item: (typeof HOME_GALLERY)[number]; n: number; onOpen: () => void }) {
   return (
-    <motion.figure
-      ref={ref}
-      className={`group/g relative col-span-1 ${layout.span} aspect-[4/5] ${layout.aspect} overflow-hidden rounded-2xl bg-bone`}
-      initial={reveal ? { opacity: 0, y: 30 } : false}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-8%" }}
-      transition={{ duration: 0.85, ease: EASE_LUXE }}
-    >
-      <motion.div style={parallax ? { y } : undefined} className="absolute inset-x-0 -inset-y-[18%]">
-        <Image
-          src={item.src}
-          alt={item.alt}
-          fill
-          sizes="(max-width: 768px) 50vw, 40vw"
-          className="object-cover transition-transform duration-[1.3s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/g:scale-[1.05]"
-        />
-      </motion.div>
-
+    <figure className="group/g relative aspect-[4/3] overflow-hidden rounded-2xl bg-bone">
+      <Image
+        src={item.src}
+        alt={item.alt}
+        fill
+        sizes="(max-width: 768px) 92vw, 46vw"
+        className="object-cover transition-transform duration-[1.3s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/g:scale-[1.05]"
+      />
       <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/45 via-transparent to-transparent opacity-50 transition-opacity duration-500 group-hover/g:opacity-90" />
-
       <button
         type="button"
         onClick={onOpen}
@@ -86,29 +48,39 @@ function Tile({
           View
         </span>
       </button>
-
       <figcaption className="pointer-events-none absolute bottom-4 left-4 rounded-full bg-ink/55 px-3 py-1 text-[0.65rem] uppercase tracking-[0.16em] text-bone backdrop-blur">
         {String(n).padStart(2, "0")}
       </figcaption>
-    </motion.figure>
+    </figure>
   );
 }
 
 export default function GalleryRail() {
-  const reduced = useReducedMotion();
-  const mounted = useMounted();
   const isDesktop = useIsDesktop();
-  const parallax = mounted && !reduced && isDesktop;
+  const perView = isDesktop ? 2 : 1;
+  const pages = Math.ceil(TOTAL / perView);
 
-  const [index, setIndex] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
+  const [index, setIndex] = useState<number | null>(null); // lightbox
+
+  // Keep the active page valid when the viewport crosses the breakpoint.
+  useEffect(() => {
+    setPage((p) => Math.min(p, pages - 1));
+  }, [pages]);
+
+  const goto = useCallback((p: number) => setPage(Math.max(0, Math.min(pages - 1, p))), [pages]);
+  const atStart = page === 0;
+  const atEnd = page >= pages - 1;
+
+  // Exact offset as a percentage of the track (slides are border-box, no gaps).
+  const offset = (page * perView * 100) / TOTAL;
+
+  // Lightbox controls
   const close = useCallback(() => setIndex(null), []);
   const step = useCallback(
-    (dir: number) =>
-      setIndex((i) => (i === null ? i : (i + dir + HOME_GALLERY.length) % HOME_GALLERY.length)),
+    (dir: number) => setIndex((i) => (i === null ? i : (i + dir + TOTAL) % TOTAL)),
     [],
   );
-
-  // Keyboard controls + scroll lock while the lightbox is open.
   useEffect(() => {
     if (index === null) return;
     const onKey = (e: KeyboardEvent) => {
@@ -123,28 +95,73 @@ export default function GalleryRail() {
       document.documentElement.style.overflow = "";
     };
   }, [index, close, step]);
-
   const current = index === null ? null : HOME_GALLERY[index];
 
+  const Arrow = ({ dir, disabled }: { dir: -1 | 1; disabled: boolean }) => (
+    <button
+      type="button"
+      onClick={() => goto(page + dir)}
+      disabled={disabled}
+      aria-label={dir === 1 ? "Next" : "Previous"}
+      className={cn(
+        "flex h-12 w-12 items-center justify-center rounded-full border border-ink/20 text-lg text-ink transition-all duration-300",
+        disabled ? "cursor-not-allowed opacity-30" : "hover:border-ink hover:bg-ink hover:text-bone",
+      )}
+    >
+      {dir === 1 ? "→" : "←"}
+    </button>
+  );
+
   return (
-    <section className="bg-bone-dim py-20 md:py-28">
+    <section className="overflow-hidden bg-bone-dim py-20 md:py-28">
       <div className="container-luxe">
         <Heading />
 
-        <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-12 md:gap-5">
-          {HOME_GALLERY.map((m, i) => (
-            <Tile
-              key={m.src}
-              item={m}
-              layout={LAYOUT[i % LAYOUT.length]}
-              n={i + 1}
-              parallax={parallax}
-              reveal={mounted && !reduced}
-              onOpen={() => setIndex(i)}
-            />
-          ))}
+        {/* Carousel viewport */}
+        <div className="relative mt-12 overflow-hidden">
+          <div
+            className="flex"
+            style={{
+              transform: `translateX(-${offset}%)`,
+              transition: "transform 0.75s cubic-bezier(0.16,1,0.3,1)",
+            }}
+          >
+            {HOME_GALLERY.map((m, i) => (
+              <div key={m.src} className="box-border px-2 md:px-2.5" style={{ flex: `0 0 ${100 / perView}%` }}>
+                <Card item={m} n={i + 1} onOpen={() => setIndex(i)} />
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* Controls: pill pagination + arrows */}
+        <div className="mt-8 flex items-center justify-between">
+          <div className="flex items-center gap-2" role="tablist" aria-label="Gallery pages">
+            {Array.from({ length: pages }).map((_, i) => {
+              const on = i === page;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  role="tab"
+                  aria-selected={on}
+                  aria-label={`Go to slide ${i + 1}`}
+                  onClick={() => goto(i)}
+                  className={cn(
+                    "h-2 rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                    on ? "w-8 bg-ink" : "w-2 bg-ink/25 hover:bg-ink/45",
+                  )}
+                />
+              );
+            })}
+          </div>
+          <div className="flex items-center gap-3">
+            <Arrow dir={-1} disabled={atStart} />
+            <Arrow dir={1} disabled={atEnd} />
+          </div>
+        </div>
+
+        {/* CTA */}
         <div className="mt-12 flex flex-col items-start justify-between gap-6 rounded-2xl border border-line bg-bone px-8 py-10 md:flex-row md:items-center">
           <div>
             <h3 className="display-md">Every angle of the estate.</h3>
@@ -176,7 +193,6 @@ export default function GalleryRail() {
             >
               <span className="text-xl leading-none">×</span>
             </button>
-
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -197,7 +213,6 @@ export default function GalleryRail() {
             >
               ›
             </button>
-
             <motion.figure
               key={current.src}
               className="relative flex max-h-full max-w-6xl flex-col items-center"
@@ -217,7 +232,7 @@ export default function GalleryRail() {
                 className="h-auto max-h-[82vh] w-auto rounded-lg object-contain shadow-2xl"
               />
               <figcaption className="mt-4 max-w-2xl text-center text-sm text-bone/70">
-                {current.alt} · {(index ?? 0) + 1} / {HOME_GALLERY.length}
+                {current.alt} · {(index ?? 0) + 1} / {TOTAL}
               </figcaption>
             </motion.figure>
           </motion.div>
