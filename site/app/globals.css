@@ -1,0 +1,345 @@
+@import "tailwindcss";
+
+/* ───────────────────────── Design tokens ───────────────────────── */
+@theme {
+  /* Palette, warm-ivory editorial base */
+  --color-ink: #16130f; /* near-black, warm */
+  --color-ink-deep: #0c0a07; /* hero night */
+  --color-bone: #f6f1e7; /* page base, warm ivory */
+  --color-bone-dim: #efe7d7; /* recessed ivory (cards/sections) */
+  --color-champagne: #c8a96a; /* metallic accent */
+  --color-champagne-soft: #e2cda0;
+  --color-botanical: #2c3a2e; /* deep estate green */
+  --color-botanical-soft: #3c4f3f;
+  --color-mist: #8c857a; /* secondary text */
+  --color-line: rgba(22, 19, 15, 0.14);
+  --color-line-soft: rgba(22, 19, 15, 0.08);
+
+  /* Typography */
+  --font-display: var(--font-gambetta), ui-serif, Georgia, serif;
+  --font-sans: var(--font-switzer), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --text-eyebrow: 0.74rem;
+
+  /* Easing */
+  --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Layout */
+  --container: 88rem;
+  --gutter: clamp(1.25rem, 5vw, 5.5rem);
+}
+
+/* ───────────────────────── Base ───────────────────────── */
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    background-color: var(--color-bone);
+    color: var(--color-ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-color: var(--color-bone);
+    color: var(--color-ink);
+  }
+
+  /* Lenis */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  ::selection {
+    background-color: var(--color-champagne);
+    color: var(--color-ink);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Hide native cursor when custom cursor is active (fine pointers only) */
+  @media (hover: hover) and (pointer: fine) {
+    html.has-cursor,
+    html.has-cursor * {
+      cursor: none !important;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-champagne);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+/* ───────────────────────── Utilities ───────────────────────── */
+@layer utilities {
+  .container-luxe {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: var(--text-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+
+  .display-hero {
+    font-size: clamp(2.5rem, 8.4vw, 8.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  .display-xl {
+    font-size: clamp(2.6rem, 7vw, 6.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.02em;
+  }
+  .display-lg {
+    font-size: clamp(2.1rem, 5vw, 4.25rem);
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+  .display-md {
+    font-size: clamp(1.7rem, 3.2vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .lead {
+    font-size: clamp(1.1rem, 1.7vw, 1.5rem);
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+  }
+
+  /* Champagne metallic text */
+  .text-metal {
+    background: linear-gradient(
+      100deg,
+      #b8965a 0%,
+      #e7d3a6 28%,
+      #c8a96a 52%,
+      #f0e2c0 74%,
+      #b8965a 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hairline {
+    height: 1px;
+    background-color: var(--color-line);
+  }
+
+  /* line-mask reveal: each line sits inside an overflow-hidden parent */
+  .line-mask {
+    overflow: hidden;
+    display: block;
+  }
+}
+
+/* ───────────────────────── Custom cursor ───────────────────────── */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  will-change: transform;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--color-champagne);
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin: -21px 0 0 -21px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--color-champagne) 70%, transparent);
+  transition:
+    width 0.45s var(--ease-luxe),
+    height 0.45s var(--ease-luxe),
+    margin 0.45s var(--ease-luxe),
+    background-color 0.45s var(--ease-luxe),
+    border-color 0.45s var(--ease-luxe),
+    opacity 0.4s ease;
+}
+.cursor-ring[data-active="true"] {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  background: color-mix(in srgb, var(--color-champagne) 14%, transparent);
+  border-color: transparent;
+}
+.cursor-ring[data-down="true"] {
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+}
+.cursor-ring[data-labelled="true"] {
+  width: 92px;
+  height: 92px;
+  margin: -46px 0 0 -46px;
+  background: var(--color-champagne);
+  border-color: transparent;
+}
+.cursor-label {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s var(--ease-luxe);
+}
+.cursor-ring[data-labelled="true"] .cursor-label {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ───────────────────────── Ken Burns ───────────────────────── */
+.ken-burns {
+  animation: ken-burns 22s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+@keyframes ken-burns {
+  from {
+    transform: scale(1.04) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.16) translate3d(1.5%, -1.5%, 0);
+  }
+}
+
+/* Hero scroll cue */
+@keyframes scrollcue {
+  0% {
+    transform: translateY(-100%);
+  }
+  50% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* Twinkling fibre-optic stars (starry-ceiling moment) */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ken-burns {
+    animation: none;
+  }
+}
+
+/* ───────────────────────── Marquee ───────────────────────── */
+.marquee-track {
+  animation: marquee-scroll var(--marquee-duration, 38s) linear infinite;
+  animation-direction: var(--marquee-direction, normal);
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* ───────────────────────── Film grain overlay ───────────────────────── */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+  background-image: url("/textures/grain.svg");
+  background-size: 200px 200px;
+}
+
+/* ───────────────────────── Reduced motion ───────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .grain {
+    display: none;
+  }
+}
