@@ -40,7 +40,7 @@ npm run build && npm start   # production
 
 - **Copy** — real, crawled from the live business site. Centralised facts/nav in
   [`lib/site.ts`](lib/site.ts); page copy is co-located in each `app/**/page.tsx`.
-  Full inventory in [`../CONTENT_MAP.md`](../CONTENT_MAP.md).
+  Full inventory in [`./CONTENT_MAP.md`](./CONTENT_MAP.md).
 - **Photography** — 100+ real images in [`public/media`](public/media), harvested
   from the business's WordPress media library. Typed manifest with intrinsic
   sizes + alt text in [`lib/media.gen.ts`](lib/media.gen.ts); curated picks in
@@ -70,7 +70,7 @@ instantly.
 
 ## Known gaps
 
-See [`../ASSETS_TODO.md`](../ASSETS_TODO.md). In short: **no video exists** on the
+See [`./ASSETS_TODO.md`](./ASSETS_TODO.md). In short: **no video exists** on the
 source (hero uses a cinematic still with a drop-in `<video>` slot), source images
 cap at ~1800px, and the **enquiry form** is front-end only — wire
 `components/site/EnquiryForm.tsx`'s `onSubmit` to a route handler / email service
