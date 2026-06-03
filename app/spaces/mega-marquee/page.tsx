@@ -3,7 +3,7 @@ import PageHero from "@/components/site/PageHero";
 import SplitFeature from "@/components/site/SplitFeature";
 import SpecList from "@/components/site/SpecList";
 import CtaBand from "@/components/site/CtaBand";
-import { SPACE_MEGA, SPACE_MEGA_ALT } from "@/lib/media";
+import { SPACE_MEGA_ALT, SPACE_MEGA_HERO } from "@/lib/media";
 import { VIDEO, REAL } from "@/lib/media.real";
 
 export const metadata: Metadata = {
@@ -19,8 +19,7 @@ export default function MegaMarqueePage() {
         eyebrow="The spaces · I"
         title={"The Mega\nMarquee."}
         intro="Up to one thousand guests beneath a single, grand and unbroken canvas."
-        media={SPACE_MEGA}
-        video={VIDEO.mega}
+        media={SPACE_MEGA_HERO}
       />
 
       <SplitFeature

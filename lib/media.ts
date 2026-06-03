@@ -26,6 +26,10 @@ export const SPACE_MEGA_ALT = img(
   "large-party-venue-marquee-venues-near-me-essex-the-chigwell-marquees.jpg",
   "The Mega Marquee laid out for a large banquet",
 );
+export const SPACE_MEGA_HERO = img(
+  "beautiful-essex-wedding-venue.jpg",
+  "The Mega Marquee dressed for a wedding, a floral aisle running the length of the grand canvas",
+);
 export const SPACE_MINI = img(
   "wedding-venue-hire-luxury-wedding-marquees-essex-the-chigwell-marquees.jpg",
   "The Mini Marquee, an intimate, light-filled setting",

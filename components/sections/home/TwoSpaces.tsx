@@ -88,10 +88,22 @@ function Pinned() {
       const ctx = sectionRef.current;
       if (!ctx) return;
       const q = gsap.utils.selector(ctx);
+      const megaContent = ctx.querySelector<HTMLElement>(".mega-content");
+      const miniContent = ctx.querySelector<HTMLElement>(".mini-content");
+
       gsap.set(q(".mini-layer"), { opacity: 0 });
       gsap.set(q(".starfield"), { opacity: 0 });
-      // Hidden layer must not intercept clicks meant for the Mega "Step inside".
-      gsap.set(q(".mini-content"), { opacity: 0, y: 40, pointerEvents: "none" });
+      gsap.set(q(".mini-content"), { opacity: 0, y: 40 });
+
+      // The Mega and Mini "Step inside" links overlap, so only one layer may be
+      // clickable at a time. Drive this from scroll progress rather than tweening
+      // pointer-events: string props don't scrub reliably and would leave the
+      // Mega link dead (or the invisible Mini link swallowing its clicks).
+      const setClickable = (megaOn: boolean) => {
+        if (megaContent) megaContent.style.pointerEvents = megaOn ? "auto" : "none";
+        if (miniContent) miniContent.style.pointerEvents = megaOn ? "none" : "auto";
+      };
+      setClickable(true);
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -101,17 +113,18 @@ function Pinned() {
           scrub: 1,
           pin: stageRef.current,
           anticipatePin: 1,
+          onUpdate: (self) => setClickable(self.progress < 0.5),
         },
       });
 
       tl.to(q(".mega-img"), { scale: 1.14, ease: "none" }, 0)
-        .to(q(".mega-content"), { opacity: 0, y: -40, pointerEvents: "none", ease: "power1.in" }, 0.18)
+        .to(q(".mega-content"), { opacity: 0, y: -40, ease: "power1.in" }, 0.18)
         .to(q(".dark-veil"), { opacity: 0.45, ease: "none" }, 0.2)
         .to(q(".mega-layer"), { opacity: 0, ease: "none" }, 0.3)
         .to(q(".mini-layer"), { opacity: 1, ease: "none" }, 0.32)
         .fromTo(q(".mini-img"), { scale: 1.16 }, { scale: 1.02, ease: "none" }, 0.32)
         .to(q(".starfield"), { opacity: 1, ease: "power1.out" }, 0.5)
-        .to(q(".mini-content"), { opacity: 1, y: 0, pointerEvents: "auto", ease: "power2.out" }, 0.58);
+        .to(q(".mini-content"), { opacity: 1, y: 0, ease: "power2.out" }, 0.58);
     },
     { scope: sectionRef },
   );
