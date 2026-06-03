@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { EASE_LUXE } from "@/lib/motion";
 import { HERO } from "@/lib/media";
-import { VIDEO } from "@/lib/media.real";
+import { VIDEO, POSTER } from "@/lib/media.real";
 import BackgroundVideo from "@/components/ui/BackgroundVideo";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { useReducedMotion } from "@/lib/useReducedMotion";
@@ -23,10 +23,10 @@ export default function Hero() {
       {/* Backdrop, real cinematic clip; poster still loads instantly + serves reduced motion. */}
       <div className="absolute inset-0">
         {playVideo ? (
-          <BackgroundVideo src={VIDEO.hero} poster={hero.src} className="h-full w-full object-cover" />
+          <BackgroundVideo src={VIDEO.hero} poster={POSTER.hero} className="h-full w-full object-cover" />
         ) : (
           <div className="relative h-full w-full">
-            <Image src={hero.src} alt={hero.alt} fill priority sizes="100vw" className="object-cover" />
+            <Image src={POSTER.hero} alt={hero.alt} fill priority sizes="100vw" className="object-cover" />
           </div>
         )}
         {/* Cinematic grading */}

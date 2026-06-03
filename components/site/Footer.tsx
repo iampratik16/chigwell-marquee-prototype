@@ -98,7 +98,7 @@ export default function Footer() {
 
       {/* Oversized wordmark */}
       <div aria-hidden className="select-none px-[var(--gutter)] pb-6">
-        <span className="block whitespace-nowrap font-display text-[18vw] leading-none tracking-tight text-bone/[0.05]">
+        <span className="block whitespace-nowrap font-display text-[9.4vw] leading-none tracking-tight text-bone/[0.05]">
           Chigwell Marquees
         </span>
       </div>

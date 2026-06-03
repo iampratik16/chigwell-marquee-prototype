@@ -9,7 +9,7 @@ import RevealText from "@/components/ui/RevealText";
 import Reveal from "@/components/ui/Reveal";
 import RevealImage from "@/components/ui/RevealImage";
 import { OCC_ASIAN, SPACE_MEGA, SPACE_MINI } from "@/lib/media";
-import { REAL, VIDEO, ASIAN_IMG } from "@/lib/media.real";
+import { REAL, VIDEO, POSTER, ASIAN_IMG } from "@/lib/media.real";
 
 export const metadata: Metadata = {
   title: "Weddings",
@@ -26,6 +26,7 @@ export default function WeddingsPage() {
         intro="Choosing a venue for your special day is one of the most important decisions you'll make. Here, we offer two magnificent ones."
         media={REAL.ceremonyAisle}
         video={VIDEO.weddings}
+        poster={POSTER.weddings}
       />
 
       <Section tone="bone" spacing="lg">

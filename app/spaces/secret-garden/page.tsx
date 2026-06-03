@@ -3,7 +3,7 @@ import PageHero from "@/components/site/PageHero";
 import SplitFeature from "@/components/site/SplitFeature";
 import SpecList from "@/components/site/SpecList";
 import CtaBand from "@/components/site/CtaBand";
-import { SECRET_IMG, VIDEO } from "@/lib/media.real";
+import { SECRET_IMG, VIDEO, POSTER } from "@/lib/media.real";
 
 export const metadata: Metadata = {
   title: "The Secret Garden",
@@ -20,6 +20,7 @@ export default function SecretGardenPage() {
         intro="A secluded lawn, a classic fountain, and the soft gold of a setting sun."
         media={SECRET_IMG.blossom}
         video={VIDEO.secretGarden}
+        poster={POSTER.secretGarden}
       />
 
       <SplitFeature

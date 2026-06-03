@@ -9,7 +9,7 @@ import Eyebrow from "@/components/ui/Eyebrow";
 import RevealText from "@/components/ui/RevealText";
 import Reveal from "@/components/ui/Reveal";
 import RevealImage from "@/components/ui/RevealImage";
-import { ESTATE_IMG, VIDEO } from "@/lib/media.real";
+import { ESTATE_IMG, VIDEO, POSTER } from "@/lib/media.real";
 
 export const metadata: Metadata = {
   title: "The Estate",
@@ -26,6 +26,7 @@ export default function EstatePage() {
         intro="A Grade II listed manor, two luxurious marquees and a secret garden, gathered on one extraordinary estate."
         media={ESTATE_IMG.hall}
         video={VIDEO.wedding}
+        poster={POSTER.wedding}
       />
 
       <Section tone="bone" spacing="lg">

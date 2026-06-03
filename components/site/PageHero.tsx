@@ -14,18 +14,21 @@ type Props = {
   title: string;
   intro?: string;
   media: Media;
-  /** Optional looping clip; `media` is the poster + reduced-motion fallback. */
+  /** Optional looping clip; `media` is the reduced-motion fallback. */
   video?: string;
+  /** Video first-frame still; used as the poster + pre-play image so the clip starts seamlessly. */
+  poster?: string;
   /** Smaller hero for utility pages. */
   size?: "lg" | "md";
 };
 
 /** Cinematic dark hero shared by inner pages. */
-export default function PageHero({ eyebrow, title, intro, media, video, size = "lg" }: Props) {
+export default function PageHero({ eyebrow, title, intro, media, video, poster, size = "lg" }: Props) {
   const reduced = useReducedMotion();
   const mounted = useMounted();
   const lines = title.split("\n");
   const playVideo = !!video && mounted && !reduced;
+  const posterSrc = poster ?? media.src;
 
   return (
     <section
@@ -35,10 +38,10 @@ export default function PageHero({ eyebrow, title, intro, media, video, size = "
     >
       <div className="absolute inset-0">
         {playVideo ? (
-          <BackgroundVideo src={video!} poster={media.src} className="h-full w-full object-cover" />
+          <BackgroundVideo src={video!} poster={posterSrc} className="h-full w-full object-cover" />
         ) : (
           <div className={reduced ? "relative h-full w-full" : "ken-burns relative h-full w-full"}>
-            <Image src={media.src} alt={media.alt} fill priority sizes="100vw" className="object-cover" />
+            <Image src={posterSrc} alt={media.alt} fill priority sizes="100vw" className="object-cover" />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/35 to-ink/45" />

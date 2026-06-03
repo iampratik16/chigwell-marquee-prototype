@@ -10,6 +10,18 @@ export const VIDEO = {
   secretGarden: "/media/video/secret-garden.mp4", // the garden (secret-garden hero)
 } as const;
 
+/**
+ * First-frame posters extracted from each hero clip. Using the video's own
+ * first frame as the poster means the still and the playing video are
+ * identical, so playback starts with no visible image-to-video jump.
+ */
+export const POSTER = {
+  hero: "/media/video/hero-poster.jpg",
+  wedding: "/media/video/scene-wedding-poster.jpg",
+  weddings: "/media/video/weddings-poster.jpg",
+  secretGarden: "/media/video/secret-garden-poster.jpg",
+} as const;
+
 type RealEntry = Media & { cat: string };
 
 const W_L = 1080,
